@@ -3,11 +3,11 @@
 
 <div class="container-toc"></div>
 
-## Bei Econfa.de registrieren
+## Bei Econda.de registrieren
 
-Econda bietet eine Controlling-Lösung zur umfassenden Analyse und Optimierung von Webshops.
+econda bietet eine Controlling-Lösung zur umfassenden Analyse und Optimierung von Webshops.
 
-## Datenformat EcondaDE-Plugin in plentymarkets einrichten
+## Elastic Export EcondaDE-Plugin in plentymarkets einrichten
 
 Um dieses Format nutzen zu können, benötigen Sie das Plugin Elastic Export.
 
@@ -15,4 +15,4 @@ Nachdem Sie das ElasticExportEcondaDE Plugin im plentyMarketplace gekauft haben,
 
 ## Lizenz
 
-Das gesamte Projekt unterliegt der GNU AFFERO GENERAL PUBLIC LICENSE – weitere Informationen finden Sie in der [LICENSE.md](https://github.com/plentymarkets/plugin-elastic-export-twenga-com/blob/master/LICENSE.md).
+Das gesamte Projekt unterliegt der GNU AFFERO GENERAL PUBLIC LICENSE – weitere Informationen finden Sie in der [LICENSE.md](https://github.com/plentymarkets/plugin-elastic-export-econda-de/blob/master/LICENSE.md).
