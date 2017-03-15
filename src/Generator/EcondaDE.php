@@ -18,9 +18,6 @@ class EcondaDE extends CSVPluginGenerator
 {
     const DELIMITER = ';';
 
-    const IMAGE_SIZE_WIDTH = 'width';
-    const IMAGE_SIZE_HEIGHT = 'height';
-
     /**
      * @var ElasticExportCoreHelper
      */
