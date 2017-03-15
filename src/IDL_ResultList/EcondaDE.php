@@ -15,6 +15,7 @@ class EcondaDE
 {
     /**
      * Creates and retrieves the extra needed data from ItemDataLayer.
+     *
      * @param array $variationIds
      * @param KeyValue $settings
      * @param array $filter
@@ -62,7 +63,7 @@ class EcondaDE
                         'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
                     ),
                     'fields' => array(
-                        'price',
+                        'price',        // price
                     ),
                 ),
 
@@ -71,10 +72,9 @@ class EcondaDE
                         'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
                     ),
                     'fields' => array(
-                        'price',
+                        'price',        // uvp
                     ),
                 ),
-
             );
 
             $itemDataLayer = pluginApp(ItemDataLayerRepositoryContract::class);

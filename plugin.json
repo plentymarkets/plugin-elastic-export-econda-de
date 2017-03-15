@@ -14,6 +14,10 @@
   "categories": [
     "3523"
   ],
+  "marketplaceName": {
+    "de":"econda",
+    "en":"econda"
+  },
   "author": "plentymarkets GmbH",
   "authorIcon": "icon_author_xs.png",
   "serviceProvider": "ElasticExportEcondaDE\\ElasticExportEcondaDEServiceProvider"

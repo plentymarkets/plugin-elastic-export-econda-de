@@ -20,8 +20,10 @@ class EcondaDE extends ResultFields
 	 */
     private $arrayHelper;
 
+
     /**
      * EcondaDE constructor.
+     *
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
@@ -31,6 +33,7 @@ class EcondaDE extends ResultFields
 
     /**
      * Creates the fields set to be retrieved from ElasticSearch.
+     *
      * @param  array $formatSettings = []
      * @return array
      */
@@ -90,17 +93,14 @@ class EcondaDE extends ResultFields
 
                 //variation
                 'id',
-                'variation.availability.id',
-                'variation.stockLimitation',
-                'variation.model',
 
                 //images
                 'images.item.type',
                 'images.item.path',
-                'images.item.position',
+                'images.item.fileType',
                 'images.variation.type',
                 'images.variation.path',
-                'images.variation.position',
+                'images.variation.fileType',
 
                 //unit
                 'unit.content',
@@ -110,22 +110,20 @@ class EcondaDE extends ResultFields
                 'defaultCategories.id',
 
                 //barcodes
-                'barcodes.id',
                 'barcodes.code',
                 'barcodes.type',
-
-                //attributes
-                'attributes.attributeValueSetId',
-                'attributes.attributeId',
-                'attributes.valueId',
-
             ],
 
             [
-                $imageMutator,
                 $languageMutator,
             ],
         ];
+
+        // Get the associated images if reference is selected
+        if($reference != -1)
+        {
+            $fields[1][] = $imageMutator;
+        }
 
         foreach($itemDescriptionFields as $itemDescriptionField)
         {

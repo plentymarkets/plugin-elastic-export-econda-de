@@ -5,7 +5,7 @@
 
 ## Bei Econda.de registrieren
 
-econda bietet eine Controlling-Lösung zur umfassenden Analyse und Optimierung von Webshops.
+Econda bietet eine Controlling-Lösung zur umfassenden Analyse und Optimierung von Webshops.
 
 ## Elastic Export EcondaDE-Plugin in plentymarkets einrichten
 
