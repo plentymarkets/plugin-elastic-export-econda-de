@@ -2,7 +2,7 @@
   "name": "ElasticExportEcondaDE",
   "namespace": "ElasticExportEcondaDE",
   "type": "export",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007",
   "pluginIcon": "icon_plugin_md.png",
   "price": 0.00,
@@ -12,7 +12,7 @@
     "en": "This plugin adds the format EcondaDE-Plugin to the Elastic Export."
   },
   "categories": [
-    "3523"
+    "3521"
   ],
   "marketplaceName": {
     "de":"econda",
