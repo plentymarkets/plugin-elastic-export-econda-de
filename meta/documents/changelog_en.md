@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Econda.de
 
+## v1.0.4 (2017-07-18)
+
+### Changed
+- The plugin Elastic Export is now required to use the plugin format EcondaDE.
+
 ## v1.0.3 (2017-05-29)
 
 ### Changed
