@@ -2,7 +2,7 @@
 
 ## v1.0.4 (2017-07-18)
 
-### Geändert
+### Behoben
 - Das Plugin Elastic Export ist nun Voraussetzung zur Nutzung des Plugin-Formats EcondaDE.
 
 ## v1.0.3 (2017-05-29)
