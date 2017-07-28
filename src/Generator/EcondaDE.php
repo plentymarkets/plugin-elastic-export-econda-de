@@ -3,11 +3,13 @@
 namespace ElasticExportEcondaDE\Generator;
 
 use ElasticExport\Helper\ElasticExportCoreHelper;
+use ElasticExport\Helper\ElasticExportPriceHelper;
+use ElasticExport\Helper\ElasticExportStockHelper;
 use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
-use Plenty\Modules\Item\DataLayer\Models\Record;
-use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\Helper\Models\KeyValue;
+use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchScrollRepositoryContract;
+use Plenty\Plugin\Log\Loggable;
 
 
 /**
@@ -16,6 +18,8 @@ use Plenty\Modules\Helper\Models\KeyValue;
  */
 class EcondaDE extends CSVPluginGenerator
 {
+	use Loggable;
+
     const DELIMITER = ';';
 
     /**
@@ -23,18 +27,22 @@ class EcondaDE extends CSVPluginGenerator
      */
     private $elasticExportCoreHelper;
 
+	/**
+	 * @var ElasticExportPriceHelper
+	 */
+	private $elasticExportPriceHelper;
+
+	/**
+	 * @var ElasticExportStockHelper
+	 */
+	private $elasticExportStockHelper;
+
     /**
      * @var ArrayHelper
      */
     private $arrayHelper;
 
-    /**
-     * @var array $idlVariations
-     */
-    private $idlVariations = array();
-
-
-    /**
+	/**
      * EcondaDE constructor.
      *
      * @param ArrayHelper $arrayHelper
@@ -47,74 +55,128 @@ class EcondaDE extends CSVPluginGenerator
     /**
      * Generates and populates the data into the CSV file.
      *
-     * @param array $resultData
+     * @param VariationElasticSearchScrollRepositoryContract $elasticSearch
      * @param array $formatSettings
      * @param array $filter
      */
-    protected function generatePluginContent($resultData, array $formatSettings = [], array $filter = [])
+    protected function generatePluginContent($elasticSearch, array $formatSettings = [], array $filter = [])
     {
+		$this->elasticExportPriceHelper = pluginApp(ElasticExportPriceHelper::class);
+		$this->elasticExportStockHelper = pluginApp(ElasticExportStockHelper::class);
         $this->elasticExportCoreHelper = pluginApp(ElasticExportCoreHelper::class);
 
-        if(is_array($resultData) && count($resultData['documents']) > 0) 
-        {
-            $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-            $this->setDelimiter(self::DELIMITER);
+		$this->setDelimiter(self::DELIMITER);
 
-            $this->addCSVContent([
-                'Id',
-                'Name',
-                'Description',
-                'ProductURL',
-                'ImageURL',
-                'Price',
-                'MSRP',
-                'New',
-                'Stock',
-                'EAN',
-                'Brand',
-                'ProductCategory',
-                'Grundpreis'
+		$this->addCSVContent([
+			'Id',
+			'Name',
+			'Description',
+			'ProductURL',
+			'ImageURL',
+			'Price',
+			'MSRP',
+			'New',
+			'Stock',
+			'EAN',
+			'Brand',
+			'ProductCategory',
+			'Grundpreis'
 
-            ]);
+		]);
 
-            //Generates a RecordList form the ItemDataLayer for the given variations
-            $idlResultList = $this->generateIdlList($resultData, $settings, $filter);
+		if($elasticSearch instanceof VariationElasticSearchScrollRepositoryContract)
+		{
+			$limitReached = false;
+			$lines = 0;
+			do
+			{
+				if($limitReached === true)
+				{
+					break;
+				}
 
-            //Creates an array with the variationId as key to surpass the sorting problem
-            if(isset($idlResultList) && $idlResultList instanceof RecordList)
-            {
-                $this->createIdlArray($idlResultList);
-            }
+				$resultList = $elasticSearch->execute();
 
-            foreach($resultData['documents'] as $variation)
-            {
-                // Get and set the price and rrp
-                $price = $this->idlVariations[$variation['id']]['variationRetailPrice.price'];
-                $rrp = $this->elasticExportCoreHelper->getRecommendedRetailPrice($this->idlVariations[$variation['id']]['variationRecommendedRetailPrice.price'], $settings);
+				foreach($resultList['documents'] as $variation)
+				{
+					if($lines == $filter['limit'])
+					{
+						$limitReached = true;
+						break;
+					}
 
-                $rrp =  $rrp > $price ? $rrp : '';
+					if(is_array($resultList['documents']) && count($resultList['documents']) > 0)
+					{
+						if($this->elasticExportStockHelper->isFilteredByStock($variation, $filter) === true)
+						{
+							continue;
+						}
 
-                $data = [
-                    'Id'                => $variation['id'],
-                    'Name'              => $this->elasticExportCoreHelper->getName($variation, $settings),
-                    'Description'       => $this->elasticExportCoreHelper->getDescription($variation, $settings),
-                    'ProductURL'        => $this->elasticExportCoreHelper->getUrl($variation, $settings, true, false),
-                    'ImageURL'          => $this->elasticExportCoreHelper->getMainImage($variation, $settings),
-                    'Price'             => number_format((float)$price, 2, ',', ''),
-                    'MSRP'              => number_format((float)$rrp, 2, ',', ''),
-                    'New'               => $this->getVariationCondition((int)$variation['data']['item']['condition']['id']),
-                    'Stock'             => $this->idlVariations[$variation['id']]['variationStock.stockNet'],
-                    'EAN'               => $this->elasticExportCoreHelper->getBarcodeByType($variation, $settings->get('barcode')),
-                    'Brand'             => $this->elasticExportCoreHelper->getExternalManufacturerName((int)$variation['data']['item']['manufacturer']['id']),
-                    'ProductCategory'   => $this->elasticExportCoreHelper->getCategory((int)$variation['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
-                    'Grundpreis'        => $this->elasticExportCoreHelper->getBasePrice($variation, $this->idlVariations[$variation['id']], $settings->get('lang')),
-                ];
-
-                $this->addCSVContent(array_values($data));
-            }
-        }
+						try
+						{
+							$this->buildRow($variation, $settings);
+						}
+						catch(\Throwable $throwable)
+						{
+							$this->getLogger(__METHOD__)->error('ElasticExportEconda::logs.fillRowError', [
+								'Error message ' => $throwable->getMessage(),
+								'Error line'    => $throwable->getLine(),
+								'VariationId'   => $variation['id']
+							]);
+						}
+						$lines = $lines +1;
+					}
+				}
+			}while ($elasticSearch->hasNext());
+		}
     }
+
+	/**
+	 * @param array $variation
+	 * @param KeyValue $settings
+	 */
+    private function buildRow($variation, $settings)
+	{
+		$priceList = $this->elasticExportPriceHelper->getPriceList($variation, $settings, 2, ',');
+
+		// Get and set the price and rrp
+		if((float)$priceList['recommendedRetailPrice'] > 0)
+		{
+			$price = $priceList['recommendedRetailPrice'] > $priceList['price'] ? $priceList['price'] : $priceList['recommendedRetailPrice'];
+		}
+		else
+		{
+			$price = $priceList['price'];
+		}
+
+		$rrp = $priceList['recommendedRetailPrice'] > $priceList['price'] ? $priceList['recommendedRetailPrice'] : $priceList['price'];
+		if((float)$rrp == 0 || (float)$price == 0 || (float)$rrp == (float)$price)
+		{
+			$rrp = '';
+		}
+
+		$rrp =  $rrp > $price ? $rrp : '';
+
+		$data = [
+			'Id'                => $variation['id'],
+			'Name'              => $this->elasticExportCoreHelper->getMutatedName($variation, $settings),
+			'Description'       => $this->elasticExportCoreHelper->getMutatedDescription($variation, $settings),
+			'ProductURL'        => $this->elasticExportCoreHelper->getMutatedUrl($variation, $settings, true, false),
+			'ImageURL'          => $this->elasticExportCoreHelper->getMainImage($variation, $settings),
+			'Price'             => $price,
+			'MSRP'              => $rrp,
+			'New'               => $this->getVariationCondition((int)$variation['data']['item']['condition']['id']),
+			'Stock'             => $this->elasticExportStockHelper->getStock($variation),
+			'EAN'               => $this->elasticExportCoreHelper->getBarcodeByType($variation, $settings->get('barcode')),
+			'Brand'             => $this->elasticExportCoreHelper->getExternalManufacturerName((int)$variation['data']['item']['manufacturer']['id']),
+			'ProductCategory'   => $this->elasticExportCoreHelper->getCategory((int)$variation['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
+			'Grundpreis'        => $this->elasticExportPriceHelper->getBasePrice($variation, $price, $settings->get('lang'), '/', false, false, $priceList['currency']),
+		];
+
+		$this->addCSVContent(array_values($data));
+	}
 
     /**
      * Get the condition of the variation.
@@ -134,59 +196,4 @@ class EcondaDE extends CSVPluginGenerator
 
         return (array_key_exists($condition, $variationCondition) ? $variationCondition[$condition] : '0');
     }
-
-    /**
-     * Creates a list of Records from the given variations.
-     *
-     * @param array     $resultData
-     * @param KeyValue  $settings
-     * @param array     $filter
-     * @return RecordList|string
-     */
-    private function generateIdlList($resultData, $settings, $filter)
-    {
-        // Create a List of all VariationIds
-        $variationIdList = array();
-        foreach($resultData['documents'] as $variation)
-        {
-            $variationIdList[] = $variation['id'];
-        }
-
-        // Get the ElasticSearch missing fields from IDL(ItemDataLayer)
-        if(is_array($variationIdList) && count($variationIdList) > 0)
-        {
-            /**
-             * @var \ElasticExportEcondaDE\IDL_ResultList\EcondaDE $idlResultList
-             */
-            $idlResultList = pluginApp(\ElasticExportEcondaDE\IDL_ResultList\EcondaDE::class);
-
-            //Return the list of results for the given variation ids
-            return $idlResultList->getResultList($variationIdList, $settings, $filter);
-        }
-
-        return '';
-    }
-
-    /**
-     * Creates an array with the rest of data needed from the ItemDataLayer.
-     *
-     * @param RecordList $idlResultList
-     */
-    private function createIdlArray($idlResultList)
-    {
-        if ($idlResultList instanceof RecordList) {
-            foreach ($idlResultList as $idlVariation) {
-                if ($idlVariation instanceof Record) {
-                    $this->idlVariations[$idlVariation->variationBase->id] = [
-                        'itemBase.id' => $idlVariation->itemBase->id,
-                        'variationBase.id' => $idlVariation->variationBase->id,
-                        'variationStock.stockNet' => $idlVariation->variationStock->stockNet,
-                        'variationRetailPrice.price' => $idlVariation->variationRetailPrice->price,
-                        'variationRecommendedRetailPrice.price' => $idlVariation->variationRecommendedRetailPrice->price,
-                    ];
-                }
-            }
-        }
-    }
-
 }

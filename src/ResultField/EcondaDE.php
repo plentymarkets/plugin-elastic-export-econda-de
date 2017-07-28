@@ -5,8 +5,11 @@ namespace ElasticExportEcondaDE\ResultField;
 use Plenty\Modules\DataExchange\Contracts\ResultFields;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
+use Plenty\Modules\Item\Search\Mutators\BarcodeMutator;
+use Plenty\Modules\Item\Search\Mutators\DefaultCategoryMutator;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Cloud\ElasticSearch\Lib\Source\Mutator\BuiltIn\LanguageMutator;
+use Plenty\Modules\Item\Search\Mutators\KeyMutator;
 
 
 /**
@@ -68,7 +71,19 @@ class EcondaDE extends ResultFields
             $itemDescriptionFields[] = 'texts.technicalData';
         }
 
+        $itemDescriptionFields[] = 'texts.lang';
+
         //Mutator
+
+		/**
+		 * @var BarcodeMutator $barcodeMutator
+		 */
+		$barcodeMutator = pluginApp(BarcodeMutator::class);
+		if($barcodeMutator instanceof BarcodeMutator)
+		{
+			$barcodeMutator->addMarket($reference);
+		}
+
         /**
          * @var ImageMutator $imageMutator
          */
@@ -77,6 +92,27 @@ class EcondaDE extends ResultFields
         {
             $imageMutator->addMarket($reference);
         }
+
+		/**
+		 * @var KeyMutator
+		 */
+		$keyMutator = pluginApp(KeyMutator::class);
+
+		if($keyMutator instanceof KeyMutator)
+		{
+			$keyMutator->setKeyList($this->getKeyList());
+			$keyMutator->setNestedKeyList($this->getNestedKeyList());
+		}
+
+		/**
+		 * @var DefaultCategoryMutator $defaultCategoryMutator
+		 */
+		$defaultCategoryMutator = pluginApp(DefaultCategoryMutator::class);
+
+		if($defaultCategoryMutator instanceof DefaultCategoryMutator)
+		{
+			$defaultCategoryMutator->setPlentyId($settings->get('plentyId'));
+		}
 
         /**
          * @var LanguageMutator $languageMutator
@@ -130,6 +166,9 @@ class EcondaDE extends ResultFields
 
             [
                 $languageMutator,
+				$defaultCategoryMutator,
+				$barcodeMutator,
+				$keyMutator
             ],
         ];
 
@@ -147,4 +186,92 @@ class EcondaDE extends ResultFields
 
         return $fields;
     }
+
+	/**
+	 * @return array
+	 */
+	private function getKeyList()
+	{
+		return [
+			// Item
+			'item.id',
+			'item.manufacturer.id',
+			'item.conditionApi',
+
+			// Unit
+			'unit.content',
+			'unit.id',
+		];
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getNestedKeyList()
+	{
+		return [
+			'keys' => [
+				// Barcodes
+				'barcodes',
+
+				// Default categories
+				'defaultCategories',
+
+				// Images
+				'images.all',
+				'images.item',
+				'images.variation',
+			],
+
+			'nestedKeys' => [
+				// Barcodes
+				'barcodes' => [
+					'code',
+					'type'
+				],
+
+				// Default categories
+				'defaultCategories' => [
+					'id'
+				],
+
+				// Images
+				'images.all' => [
+					'urlMiddle',
+					'urlPreview',
+					'urlSecondPreview',
+					'url',
+					'path',
+					'position',
+				],
+				'images.item' => [
+					'urlMiddle',
+					'urlPreview',
+					'urlSecondPreview',
+					'url',
+					'path',
+					'position',
+				],
+				'images.variation' => [
+					'urlMiddle',
+					'urlPreview',
+					'urlSecondPreview',
+					'url',
+					'path',
+					'position',
+				],
+
+				// texts
+				'texts' => [
+					'urlPath',
+					'name1',
+					'name2',
+					'name3',
+					'shortDescription',
+					'description',
+					'technicalData',
+				],
+			]
+		];
+	}
 }
