@@ -2,6 +2,9 @@
 
 ## v1.0.5 (2017-07-31)
 
+### Added
+- Added a user guide to simplify the installation of this plugin.
+
 ### Changed
 - The format plugin is now only based on Elastic Search.
 - The performance has been improved.
