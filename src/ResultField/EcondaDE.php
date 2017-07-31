@@ -125,7 +125,7 @@ class EcondaDE extends ResultFields
                 //item
                 'item.id',
                 'item.manufacturer.id',
-                'item.condition',
+                'item.conditionApi.id',
 
                 //variation
                 'id',

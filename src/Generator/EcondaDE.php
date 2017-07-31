@@ -11,7 +11,6 @@ use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchScrollRepositoryContract;
 use Plenty\Plugin\Log\Loggable;
 
-
 /**
  * Class EcondaDE
  * @package ElasticExportEcondaDE\Generator
@@ -142,22 +141,7 @@ class EcondaDE extends CSVPluginGenerator
 		$priceList = $this->elasticExportPriceHelper->getPriceList($variation, $settings, 2, ',');
 
 		// Get and set the price and rrp
-		if((float)$priceList['recommendedRetailPrice'] > 0)
-		{
-			$price = $priceList['recommendedRetailPrice'] > $priceList['price'] ? $priceList['price'] : $priceList['recommendedRetailPrice'];
-		}
-		else
-		{
-			$price = $priceList['price'];
-		}
-
-		$rrp = $priceList['recommendedRetailPrice'] > $priceList['price'] ? $priceList['recommendedRetailPrice'] : $priceList['price'];
-		if((float)$rrp == 0 || (float)$price == 0 || (float)$rrp == (float)$price)
-		{
-			$rrp = '';
-		}
-
-		$rrp =  $rrp > $price ? $rrp : '';
+		$rrp = $priceList['recommendedRetailPrice'] > $priceList['price'] ? $priceList['recommendedRetailPrice'] : '';
 
 		$data = [
 			'Id'                => $variation['id'],
@@ -165,14 +149,14 @@ class EcondaDE extends CSVPluginGenerator
 			'Description'       => $this->elasticExportCoreHelper->getMutatedDescription($variation, $settings),
 			'ProductURL'        => $this->elasticExportCoreHelper->getMutatedUrl($variation, $settings, true, false),
 			'ImageURL'          => $this->elasticExportCoreHelper->getMainImage($variation, $settings),
-			'Price'             => $price,
+			'Price'             => $priceList['price'],
 			'MSRP'              => $rrp,
-			'New'               => $this->getVariationCondition((int)$variation['data']['item']['condition']['id']),
+			'New'               => $this->getVariationCondition((int)$variation['data']['item']['conditionApi']['id']),
 			'Stock'             => $this->elasticExportStockHelper->getStock($variation),
 			'EAN'               => $this->elasticExportCoreHelper->getBarcodeByType($variation, $settings->get('barcode')),
 			'Brand'             => $this->elasticExportCoreHelper->getExternalManufacturerName((int)$variation['data']['item']['manufacturer']['id']),
 			'ProductCategory'   => $this->elasticExportCoreHelper->getCategory((int)$variation['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
-			'Grundpreis'        => $this->elasticExportPriceHelper->getBasePrice($variation, $price, $settings->get('lang'), '/', false, false, $priceList['currency']),
+			'Grundpreis'        => $this->elasticExportPriceHelper->getBasePrice($variation, (float)$priceList['price'], $settings->get('lang'), '/', false, false, $priceList['currency']),
 		];
 
 		$this->addCSVContent(array_values($data));
@@ -187,11 +171,12 @@ class EcondaDE extends CSVPluginGenerator
     private function getVariationCondition(int $condition): string
     {
         $variationCondition = [
-            0 => '1', // plenty condition: NEU
-            1 => '0', // plenty condition: GEBRAUCHT
-            2 => '1', // plenty condition: NEU & OVP
-            3 => '1', // plenty condition: NEU mit Etikett
-            4 => '0', // plenty condition: B-WARE
+			0 => '1', // plenty condition: New
+			1 => '0', // plenty condition: Used but as new
+			2 => '0', // plenty condition: Used but very good
+			3 => '0', // plenty condition: Used but good
+			4 => '0', // plenty condition: Used but acceptable
+			5 => '0', // plenty condition: Factory Seconds
         ];
 
         return (array_key_exists($condition, $variationCondition) ? $variationCondition[$condition] : '0');
