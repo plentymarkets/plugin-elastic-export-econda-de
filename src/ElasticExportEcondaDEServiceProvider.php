@@ -30,7 +30,8 @@ class ElasticExportEcondaDEServiceProvider extends DataExchangeServiceProvider
             'ElasticExportEcondaDE\ResultField\EcondaDE',
             'ElasticExportEcondaDE\Generator\EcondaDE',
             '',
-            true
+            true,
+			true
         );
     }
 }

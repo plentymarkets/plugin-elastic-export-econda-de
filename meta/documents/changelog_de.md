@@ -1,5 +1,14 @@
 # Release Notes für Elastic Export Econda.de
 
+## v1.0.5 (2017-07-31)
+
+### Hinzugefügt
+- Es wurde ein User Guide hinzugefügt um die Einrichtung für dieses Plugin zu vereinfachen.
+
+### Geändert
+- Das Formatplugin basiert nun nur noch auf Elastic Search.
+- Die Performance wurde verbessert.
+
 ## v1.0.4 (2017-07-18)
 
 ### Behoben
