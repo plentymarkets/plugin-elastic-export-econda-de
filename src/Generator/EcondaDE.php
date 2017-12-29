@@ -65,6 +65,8 @@ class EcondaDE extends CSVPluginGenerator
         $this->elasticExportCoreHelper = pluginApp(ElasticExportCoreHelper::class);
 
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+		
+		$this->elasticExportStockHelper->setAdditionalStockInformation($settings);
 
 		$this->setDelimiter(self::DELIMITER);
 
