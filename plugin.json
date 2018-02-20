@@ -2,14 +2,14 @@
   "name": "ElasticExportEcondaDE",
   "namespace": "ElasticExportEcondaDE",
   "type": "export",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007",
   "pluginIcon": "icon_plugin_md.png",
   "price": 0.00,
   "description": "This plugin adds the format Econda.de to the Elastic Export.",
   "shortDescription": {
-    "de": "Das Plugin ElasticExportEcondaDE fügt das Datenformat EcondaDE-Plugin zum Elastischen Export hinzu.",
-    "en": "This plugin adds the format EcondaDE-Plugin to the Elastic Export."
+    "de": "Die Integration des Datenformats econda-Plugin ermöglicht die Artikeldatenübertragung zum Affiliate-Dienstleister econda über den elastischen Export.",
+    "en": "The integration of the data format econda-Plugin enables the transfer of item data to the affiliate service provider econda via the elastic export."
   },
   "categories": [
     "3521"
