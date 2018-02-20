@@ -16,7 +16,7 @@
 - Es wurde ein User Guide hinzugefügt um die Einrichtung für dieses Plugin zu vereinfachen.
 
 ### Geändert
-- Das Formatplugin basiert nun nur noch auf Elastic Search.
+- Das Formatplugin basiert nun nur noch auf Elasticsearch.
 - Die Performance wurde verbessert.
 
 ## v1.0.4 (2017-07-18)
@@ -32,7 +32,7 @@
 ## v1.0.2 (2017-03-22)
 
 ### Behoben
-- Es wird nun ein anderes Feld genutzt um die Bild-URLs auszulesen für Plugins die elastic search benutzen.
+- Es wird nun ein anderes Feld genutzt um die Bild-URLs auszulesen für Plugins die Elasticsearch benutzen.
 
 ## v1.0.1 (2017-03-16)
 

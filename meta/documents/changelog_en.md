@@ -6,7 +6,7 @@
 - Added a user guide to simplify the installation of this plugin.
 
 ### Changed
-- The format plugin is now based on Elastic Search only.
+- The format plugin is now based on Elasticsearch only.
 - The performance has been improved.
 
 ## v1.0.4 (2017-07-18)
@@ -22,7 +22,7 @@
 ## v1.0.2 (2017-03-22)
 
 ### Fixed
-- We now use a different value to get the image URLs for plugins working with elastic search.
+- We now use a different value to get the image URLs for plugins working with Elasticsearch.
 
 ## v1.0.1 (2017-03-16)
 
