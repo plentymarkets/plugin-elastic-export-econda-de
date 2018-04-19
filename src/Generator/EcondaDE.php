@@ -5,6 +5,7 @@ namespace ElasticExportEcondaDE\Generator;
 use ElasticExport\Helper\ElasticExportCoreHelper;
 use ElasticExport\Helper\ElasticExportPriceHelper;
 use ElasticExport\Helper\ElasticExportStockHelper;
+use ElasticExport\Services\FiltrationService;
 use Plenty\Modules\DataExchange\Contracts\CSVPluginGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
@@ -41,6 +42,11 @@ class EcondaDE extends CSVPluginGenerator
      */
     private $arrayHelper;
 
+    /**
+     * @var FiltrationService
+     */
+    private $filtrationService;
+
 	/**
      * EcondaDE constructor.
      *
@@ -65,6 +71,7 @@ class EcondaDE extends CSVPluginGenerator
         $this->elasticExportCoreHelper = pluginApp(ElasticExportCoreHelper::class);
 
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+		$this->filtrationService = pluginApp(FiltrationService::class, [$settings, $filter]);
 
 		$this->setDelimiter(self::DELIMITER);
 
@@ -108,7 +115,7 @@ class EcondaDE extends CSVPluginGenerator
 
 					if(is_array($resultList['documents']) && count($resultList['documents']) > 0)
 					{
-						if($this->elasticExportStockHelper->isFilteredByStock($variation, $filter) === true)
+						if($this->filtrationService->filter($variation))
 						{
 							continue;
 						}

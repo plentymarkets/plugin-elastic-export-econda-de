@@ -2,7 +2,7 @@
   "name": "ElasticExportEcondaDE",
   "namespace": "ElasticExportEcondaDE",
   "type": "export",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007",
   "pluginIcon": "icon_plugin_md.png",
   "price": 0.00,
@@ -11,13 +11,8 @@
     "de": "Die Integration des Datenformats econda-Plugin ermöglicht die Artikeldatenübertragung zum Affiliate-Dienstleister econda über den elastischen Export.",
     "en": "The integration of the data format econda-Plugin enables the transfer of item data to the affiliate service provider econda via the elastic export."
   },
-  "categories": [
-    "3521"
-  ],
-  "marketplaceName": {
-    "de":"econda",
-    "en":"econda"
-  },
+  "categories": ["3521"],
+  "marketplaceName": "econda",
   "require": ["ElasticExport"],
   "author": "plentymarkets GmbH",
   "authorIcon": "icon_author_xs.png",
