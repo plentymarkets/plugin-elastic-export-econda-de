@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Econda.de
 
+## v1.0.8 (2018-04-30)
+
+### Changed
+- Laravel 5.5 update.
+
 ## v1.0.7 (2018-03-28)
 
 ### Changed
