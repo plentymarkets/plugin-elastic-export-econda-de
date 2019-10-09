@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Econda.de
 
+## v1.0.10 (2019-10-09)
+
+### Changed
+- The user guide was updated (changed form of address, corrected broken links).
+
 ## v1.0.9 (2019-02-19)
 
 ### Changed
