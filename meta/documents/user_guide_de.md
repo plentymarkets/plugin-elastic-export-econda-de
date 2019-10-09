@@ -63,7 +63,7 @@ In der folgenden Tabelle finden Sie Hinweise zu den einzelnen Formateinstellunge
 
 _Tab. 1: Einstellungen für das Datenformat **EcondaDE-Plugin**_
 
-## 3 Übersicht der verfügbaren Spalten
+## 3 Verfügbare Spalten der Exportdatei
 
 |**Spaltenbezeichnung** |**Erläuterung** |
 |:---                   |:--- |
