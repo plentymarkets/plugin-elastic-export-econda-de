@@ -1,5 +1,10 @@
 # Release Notes for Elastic Export Econda.de
 
+## v1.0.12 (2022-06-13)
+
+### Changed
+- The plugin user guide was updated.
+
 ## v1.0.11 (2022-05-26)
 
 ### Changed
