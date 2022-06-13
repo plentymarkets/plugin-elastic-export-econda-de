@@ -2,7 +2,7 @@
   "name": "ElasticExportEcondaDE",
   "namespace": "ElasticExportEcondaDE",
   "type": "export",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "license": "GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007",
   "pluginIcon": "icon_plugin_md.png",
   "price": 0.00,
@@ -21,5 +21,8 @@
   },
   "author": "plentysystems AG",
   "authorIcon": "icon_author_xs.png",
-  "serviceProvider": "ElasticExportEcondaDE\\ElasticExportEcondaDEServiceProvider"
+  "serviceProvider": "ElasticExportEcondaDE\\ElasticExportEcondaDEServiceProvider",
+  "platform": {
+    "php": ">=7.3 <8.1"
+}
 }
